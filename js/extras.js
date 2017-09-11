@@ -31,18 +31,18 @@ jQuery( "#student-log-button" ).click(function() {
 
 
 
-//adds up the hours for the individual student view
-  // jQuery(document).ready(function() {
-  //   var theHrs = 0;
-  //   if (document.getElementById('totalHours')){
-  //     var getHrs = document.getElementsByClassName('hours-data');
-  //     console.log(getHrs);
-  //     for(var i = 0; i < getHrs.length; i++){
-  //       theHrs += parseInt(getHrs[i].innerHTML, 10);        
-  //     }
-  //     document.getElementById('totalHours').innerHTML = theHrs;
-  //   }
-  // });
+//adds up the hours for the individual student view and puts them in the blue box
+ jQuery(document).ready(function() {
+ var theHrs = 0;
+  if (document.getElementById('totalHours')){
+   var getHrs = document.getElementsByClassName('hours-data');
+       console.log(getHrs);
+  for(var i = 0; i < getHrs.length; i++){
+    theHrs += parseInt(getHrs[i].innerHTML, 10);        
+       }
+       document.getElementById('totalHours').innerHTML = theHrs;
+     }
+   });
 
 
   //set hrs for events into form
