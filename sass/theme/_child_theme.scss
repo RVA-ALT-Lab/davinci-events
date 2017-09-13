@@ -1,0 +1,60 @@
+
+#student-log {
+	display:none;
+}
+
+.reflect-button{
+	width: 100%;
+    margin-bottom: 30px;
+    background-color:#21759b;
+    color: #fff;    
+}
+
+.reflect-button:hover {
+	background-color:#979899;
+}
+
+.reflection-item-image {
+	border-radius: 50%;
+   margin: 10px;
+}
+
+#totalHours {
+	margin-left: 20px;
+    font-size: 2em;
+    display: inline-block;
+    background-color: #0085ba;
+    padding: 20px;
+    color: #fff;
+}
+
+.student-events .col-md-2 {
+	border: 1px solid #efefef;
+    margin-right: 10px;
+}
+
+#tribe-events-footer {
+	margin-top: 30px;
+}
+
+.student-name {
+	font-size: 2em;
+    padding-top: 20px;
+}
+
+
+.event-list-header{
+	font-size: 1.5em;
+    font-weight: 600;
+    border: 1px solid #efefef;
+    margin-top: 20px;
+}
+
+.event-list-detail {
+	border:1px solid #efefef;
+}
+
+.tribe-events-sub-nav li {
+	background-color: #ffba00;
+	padding: 8px;
+}
