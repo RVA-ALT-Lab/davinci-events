@@ -84,6 +84,32 @@ function create_posttype(){
 
 }
 
-
-
 add_action('init', 'create_posttype'); 
+
+function run_custom_sql_query(){
+    $sql_interface = new SqlInterface; 
+    $results = $sql_interface->getOptions();  
+    return $results; 
+}
+
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'davinci/v1', '/data', array(
+        'methods' => 'GET',
+        'callback' => 'run_custom_sql_query',
+    ) );
+} );
+
+class SqlInterface {
+    function __construct(){
+        global $wpdb; 
+        $this->db = $wpdb; 
+    }
+
+    function getOptions(){
+        $results = $this->db->get_results( 'SELECT * FROM wp_options WHERE option_id = 1', OBJECT ); 
+        return $results;
+    }
+}
+
+
+
