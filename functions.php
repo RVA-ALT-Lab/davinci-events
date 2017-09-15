@@ -90,6 +90,7 @@ function run_custom_sql_query(){
     $sql_interface = new SqlInterface; 
     $results = $sql_interface->getOptions();  
     return $results; 
+    // Comment
 }
 
 add_action( 'rest_api_init', function () {
