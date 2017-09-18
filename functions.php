@@ -84,13 +84,16 @@ function create_posttype(){
 
 }
 
+function printFormData(){
+    echo $form_data['survey']['global']; 
+}
+
 add_action('init', 'create_posttype'); 
 
 function run_custom_sql_query(){
     $sql_interface = new SqlInterface; 
     $results = $sql_interface->getOptions();  
     return $results; 
-    // Comment
 }
 
 add_action( 'rest_api_init', function () {
@@ -107,7 +110,27 @@ class SqlInterface {
     }
 
     function getOptions(){
-        $results = $this->db->get_results( 'SELECT * FROM wp_options WHERE option_id = 1', OBJECT ); 
+        $results = $this->db->get_results( 
+    'SELECT reflectionID,  reflectionContent, postDate, userEmail, eventID, eventTitle, eventHours FROM 
+        (SELECT ID as reflectionID, post_content as reflectionContent, post_date as postDate FROM wp_posts WHERE post_type= "post") AS PostsTable
+        INNER JOIN 
+        (SELECT post_id, meta_value as userEmail FROM wp_postmeta WHERE meta_key= "userEmail") AS EmailTable
+            ON PostsTable.reflectionID = EmailTable.post_id     
+        INNER JOIN 
+        (SELECT REPLACE(slug, "event-", "") AS eventID, object_id 
+            FROM wp_term_relationships 
+            INNER JOIN wp_terms 
+            ON wp_term_relationships.term_taxonomy_id = wp_terms.term_id 
+            WHERE  term_taxonomy_id != 5) AS EventIDTable
+        ON PostsTable.reflectionID  = EventIDTable.object_id
+        INNER JOIN 
+            (SELECT post_title as eventTitle, ID FROM wp_posts) AS EventTitleTable 
+        ON EventIDTable.eventID = EventTitleTable.ID
+        INNER JOIN 
+            (SELECT meta_value as eventHours, post_id FROM wp_postmeta WHERE meta_key = "_ecp_custom_2") AS EventHoursTable 
+        ON EventIDTable.eventID = EventHoursTable.post_id'
+
+            , OBJECT ); 
         return $results;
     }
 }
