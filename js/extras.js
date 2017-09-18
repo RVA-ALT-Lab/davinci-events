@@ -60,7 +60,7 @@ jQuery( "#student-log-button" ).click(function() {
 
 //auto enter date value for event
         if(document.getElementById('input_4_11')){
-           var date = document.getElementsByClassName('tribe-events-start-date')[0].title;
+           var date = document.getElementsByClassName('dtstart')[0].title;
            var dateField = document.getElementById('input_4_11');
            dateField.value = date;
          }
