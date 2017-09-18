@@ -9,11 +9,18 @@
 
 get_header(); 
 
-printFormData(); 
+?>
 
 
 
 
+
+<script src="https://unpkg.com/vue"></script>
+<script type="text/javascript">
+	
+</script>
+
+<?php
 get_footer(); 
 
 ?>

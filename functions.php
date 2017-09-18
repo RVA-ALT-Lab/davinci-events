@@ -114,11 +114,11 @@ function run_custom_sql_query(){
         $q5Pattern = '/<div id=\"event-rating-5\">([a-zA-Z0-9 ’\'.;:_]+)<\/div>/'; 
         preg_match($q5Pattern, $subject, $q5Match); 
 
-        $result->question1 = trim(split(':', $q1Match[1])[1]); 
-        $result->question2 = trim(split(':', $q2Match[1])[1]);
-        $result->question3 = trim(split(':', $q3Match[1])[1]);
-        $result->question4 = trim(split(':', $q4Match[1])[1]);
-        $result->question5 = trim(split(':', $q5Match[1])[1]); 
+        $result->question1 = trim(preg_split('/:/', $q1Match[1])[1]); 
+        $result->question2 = trim(preg_split('/:/', $q2Match[1])[1]);
+        $result->question3 = trim(preg_split('/:/', $q3Match[1])[1]);
+        $result->question4 = trim(preg_split('/:/', $q4Match[1])[1]);
+        $result->question5 = trim(preg_split('/:/', $q5Match[1])[1]); 
 
 
     }
@@ -134,6 +134,7 @@ add_action( 'rest_api_init', function () {
     ) );
 } );
 
+
 class SqlInterface {
     function __construct(){
         global $wpdb; 
@@ -144,46 +145,99 @@ class SqlInterface {
         $results = $this->db->get_results( 
     'SELECT reflectionID,  reflectionContent, postDate, EmailTable.userEmail, eventID, eventTitle, eventHours, profileID, userCohort, userMajor
 FROM 
-    (SELECT ID as reflectionID, post_content as reflectionContent, post_date as postDate FROM wp_24727_posts WHERE post_type= "post") AS PostsTable
+    (SELECT ID as reflectionID, post_content as reflectionContent, post_date as postDate FROM wp_posts WHERE post_type= "post") AS PostsTable
 INNER JOIN 
-    (SELECT post_id, meta_value as userEmail FROM wp_24727_postmeta WHERE meta_key= "userEmail") AS EmailTable
+    (SELECT post_id, meta_value as userEmail FROM wp_postmeta WHERE meta_key= "userEmail") AS EmailTable
 ON PostsTable.reflectionID = EmailTable.post_id  
 -- Do a LEFT JOIN here because we are going to have fewer 
 LEFT JOIN 
 (
-    SELECT profileID , userEmail FROM wp_24727_posts 
+    SELECT profileID , userEmail FROM wp_posts 
     INNER JOIN 
-        ( SELECT meta_value as userEmail, post_id as profileID FROM wp_24727_postmeta WHERE meta_key = "userEmail") AS metaTable1
-        ON wp_24727_posts.ID =  metaTable1.profileID WHERE post_type = "profile"
+        ( SELECT meta_value as userEmail, post_id as profileID FROM wp_postmeta WHERE meta_key = "userEmail") AS metaTable1
+        ON wp_posts.ID =  metaTable1.profileID WHERE post_type = "profile"
 ) As MetaTable ON  EmailTable.userEmail = MetaTable.userEmail  
 
 LEFT JOIN 
-( SELECT meta_value as userCohort, post_id FROM wp_24727_postmeta WHERE meta_key = "cohort")
+( SELECT meta_value as userCohort, post_id FROM wp_postmeta WHERE meta_key = "cohort")
 As MetaTable2 ON  MetaTable.profileID = MetaTable2.post_id 
 
 LEFT JOIN 
-( SELECT meta_value as userMajor, post_id FROM wp_24727_postmeta WHERE meta_key = "major")
+( SELECT meta_value as userMajor, post_id FROM wp_postmeta WHERE meta_key = "major")
 As MetaTable3 ON  MetaTable.profileID = MetaTable3.post_id 
 
 -- This section of code getst the event ID and subsequent info that depends on that ID 
 INNER JOIN 
     (SELECT REPLACE(slug, "event-", "") AS eventID, object_id 
-        FROM wp_24727_term_relationships 
-        INNER JOIN wp_24727_terms 
-        ON wp_24727_term_relationships.term_taxonomy_id = wp_24727_terms.term_id 
+        FROM wp_term_relationships 
+        INNER JOIN wp_terms 
+        ON wp_term_relationships.term_taxonomy_id = wp_terms.term_id 
         WHERE  term_taxonomy_id != 5) AS EventIDTable
 ON PostsTable.reflectionID  = EventIDTable.object_id
 INNER JOIN 
-    (SELECT post_title as eventTitle, ID FROM wp_24727_posts) AS EventTitleTable 
+    (SELECT post_title as eventTitle, ID FROM wp_posts) AS EventTitleTable 
 ON EventIDTable.eventID = EventTitleTable.ID
 INNER JOIN 
-    (SELECT meta_value as eventHours, post_id FROM wp_24727_postmeta WHERE meta_key = "_ecp_custom_2") AS EventHoursTable 
+    (SELECT meta_value as eventHours, post_id FROM wp_postmeta WHERE meta_key = "_ecp_custom_2") AS EventHoursTable 
 ON EventIDTable.eventID = EventHoursTable.post_id'
 
             , OBJECT ); 
         return $results;
     }
 }
+
+
+
+// class SqlInterface {
+//     function __construct(){
+//         global $wpdb; 
+//         $this->db = $wpdb; 
+//     }
+
+//     function getOptions(){
+//         $results = $this->db->get_results( 
+//     'SELECT reflectionID,  reflectionContent, postDate, EmailTable.userEmail, eventID, eventTitle, eventHours, profileID, userCohort, userMajor
+// FROM 
+//     (SELECT ID as reflectionID, post_content as reflectionContent, post_date as postDate FROM wp_24727_posts WHERE post_type= "post") AS PostsTable
+// INNER JOIN 
+//     (SELECT post_id, meta_value as userEmail FROM wp_24727_postmeta WHERE meta_key= "userEmail") AS EmailTable
+// ON PostsTable.reflectionID = EmailTable.post_id  
+// -- Do a LEFT JOIN here because we are going to have fewer 
+// LEFT JOIN 
+// (
+//     SELECT profileID , userEmail FROM wp_24727_posts 
+//     INNER JOIN 
+//         ( SELECT meta_value as userEmail, post_id as profileID FROM wp_24727_postmeta WHERE meta_key = "userEmail") AS metaTable1
+//         ON wp_24727_posts.ID =  metaTable1.profileID WHERE post_type = "profile"
+// ) As MetaTable ON  EmailTable.userEmail = MetaTable.userEmail  
+
+// LEFT JOIN 
+// ( SELECT meta_value as userCohort, post_id FROM wp_24727_postmeta WHERE meta_key = "cohort")
+// As MetaTable2 ON  MetaTable.profileID = MetaTable2.post_id 
+
+// LEFT JOIN 
+// ( SELECT meta_value as userMajor, post_id FROM wp_24727_postmeta WHERE meta_key = "major")
+// As MetaTable3 ON  MetaTable.profileID = MetaTable3.post_id 
+
+// -- This section of code getst the event ID and subsequent info that depends on that ID 
+// INNER JOIN 
+//     (SELECT REPLACE(slug, "event-", "") AS eventID, object_id 
+//         FROM wp_24727_term_relationships 
+//         INNER JOIN wp_24727_terms 
+//         ON wp_24727_term_relationships.term_taxonomy_id = wp_24727_terms.term_id 
+//         WHERE  term_taxonomy_id != 5) AS EventIDTable
+// ON PostsTable.reflectionID  = EventIDTable.object_id
+// INNER JOIN 
+//     (SELECT post_title as eventTitle, ID FROM wp_24727_posts) AS EventTitleTable 
+// ON EventIDTable.eventID = EventTitleTable.ID
+// INNER JOIN 
+//     (SELECT meta_value as eventHours, post_id FROM wp_24727_postmeta WHERE meta_key = "_ecp_custom_2") AS EventHoursTable 
+// ON EventIDTable.eventID = EventHoursTable.post_id'
+
+//             , OBJECT ); 
+//         return $results;
+//     }
+// }
 
 
 
