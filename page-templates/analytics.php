@@ -26,7 +26,7 @@ get_header();
 
 <script type="text/x-template" id="records-table">
 	<div>
-		<h3>Responses Per Question</h3>
+		<h3>This is a GitHub Release Test</h3>
 
 		<h3>Total Reflections Over Time</h3>
 		<div id="chartDiv" style="height: 500px;">
