@@ -1,13 +1,13 @@
-<?php 
+<?php
 /**
  * Template Name: Analytics
  *
- * Template to see all student data - only available to admin 
+ * Template to see all student data - only available to admin
  *
  * @package understrap
  */
 
-get_header(); 
+get_header();
 
 ?>
 <div class="container">
@@ -17,9 +17,11 @@ get_header();
 				<records-table :records="records"></records-table>
 			</div>
 		</div>
-		
+
 	</div>
-	
+
+
+
 </div>
 
 <script src="https://unpkg.com/vue"></script>
@@ -75,74 +77,74 @@ get_header();
 
 <script type="text/javascript">
 
-	
 
-	Vue.component('records-table', 
+
+	Vue.component('records-table',
 	{
-		template: '#records-table', 
-		props: ['records'], 
+		template: '#records-table',
+		props: ['records'],
 		data: function(){
 			return {
-				localFilter: '', 
-				eventFilter: 'All', 
-				cohortFilter: 'All', 
+				localFilter: '',
+				eventFilter: 'All',
+				cohortFilter: 'All',
 				majorFilter: 'All'
 			}
-		}, 
+		},
 		computed: {
 
 			eventsList: function(){
 				let eventsList = this.records.map(function(record){
-					return record.eventTitle; 
+					return record.eventTitle;
 				})
 
 				function onlyUnique(value, index, self){
-					return self.indexOf(value) === index; 
+					return self.indexOf(value) === index;
 				}
 				eventsList = eventsList.filter(onlyUnique)
-				return eventsList; 
-			}, 
+				return eventsList;
+			},
 			localList: function(){
 
-				let localList = this.records; 
+				let localList = this.records;
 
 				if (this.eventFilter !== 'All'){
 					localList = localList.filter(record => {
-						return this.eventFilter == record.eventTitle; 
+						return this.eventFilter == record.eventTitle;
 					})
 				}
 
 				if (this.cohortFilter !== 'All'){
 					localList = localList.filter(record => {
 						console.log(record.userCohort)
-						return this.cohortFilter == record.userCohort; 
+						return this.cohortFilter == record.userCohort;
 					})
 				}
 
 				if (this.majorFilter !== 'All'){
 					localList = localList.filter(record => {
 						console.log(record.userMajor)
-						return this.majorFilter == record.userMajor; 
+						return this.majorFilter == record.userMajor;
 					})
 				}
 
 
-				let localFilter = this.localFilter; 
+				let localFilter = this.localFilter;
 				if (localFilter === ''){
-					return localList; 
+					return localList;
 				} else {
 				 return	localList.filter(function(record){
 				 	for(value in record){
 				 		if (record.hasOwnProperty(value) && ( record[value] !== null && record[value] !== undefined ) ){
 				 			console.log(typeof record[value])
-							if (record[value].toLowerCase().includes( localFilter.toLowerCase() )){ 
+							if (record[value].toLowerCase().includes( localFilter.toLowerCase() )){
 								console.log('true')
-								return true; 
+								return true;
 							}
 				 		}
 				 	}
 
-				 	return false; 
+				 	return false;
 				 })
 				}
 			}
@@ -150,31 +152,31 @@ get_header();
 	})
 
 	new Vue({
-		el: '#app', 
+		el: '#app',
 		data: function(){
 			return {
-				records: [], 
+				records: [],
 				inputFilter: ''
-			}; 
-		}, 
+			};
+		},
 		methods: {
 			getData: function(){
-				this.$http.get('/davinci-events/wp-json/davinci/v1/data').then(response =>{
-					this.records = response.body; 
+				this.$http.get('/wp-json/davinci/v1/data').then(response =>{
+					this.records = response.body;
 				}, response => {
-					console.log(response); 
+					console.log(response);
 				})
 			}
-		}, 
+		},
 		mounted: function(){
-			this.getData(); 
+			this.getData();
 		},
 		computed: {
-		} 
+		}
 	})
 </script>
 
 <?php
-get_footer(); 
+get_footer();
 
 ?>
