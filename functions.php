@@ -19,6 +19,11 @@ function theme_enqueue_styles() {
     wp_enqueue_style( 'child-understrap-styles', get_stylesheet_directory_uri() . '/css/child-theme.min.css', array(), $the_theme->get( 'Version' ) );
     wp_enqueue_script( 'child-understrap-scripts', get_stylesheet_directory_uri() . '/js/child-theme.min.js', array(), $the_theme->get( 'Version' ), true );
     wp_enqueue_script( 'extra-script', get_stylesheet_directory_uri() . '/js/extras.js', array(), $the_theme->get( 'Version' ), true );
+    wp_enqueue_script( 'amcharts', get_stylesheet_directory_uri() . '/js/amcharts/amcharts/amcharts.js', array(), $the_theme->get( 'Version' ), false );
+    wp_enqueue_script( 'amcharts-serial', get_stylesheet_directory_uri() . '/js/amcharts/amcharts/serial.js', array(), $the_theme->get( 'Version' ), false );
+    wp_enqueue_script( 'amcharts-theme', get_stylesheet_directory_uri() . '/js/amcharts/amcharts/themes/light.js', array(), $the_theme->get( 'Version' ), false );
+    wp_enqueue_script( 'vue', 'https://unpkg.com/vue', array(), $the_theme->get( 'Version' ), false );
+    wp_enqueue_script( 'vue-resource', 'https://cdn.jsdelivr.net/npm/vue-resource@1.3.4', array(), $the_theme->get( 'Version' ), false );
 
 }
 
