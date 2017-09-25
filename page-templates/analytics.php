@@ -321,7 +321,7 @@ get_header();
 		},
 		methods: {
 			getData: function(){
-				this.$http.get('davinci-events/wp-json/davinci/v1/data').then(response =>{
+				this.$http.get('/davinci-events/wp-json/davinci/v1/data').then(response =>{
 					this.records = response.body;
 					console.log(this.records)
 				}, response => {
