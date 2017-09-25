@@ -109,7 +109,7 @@ get_header();
 			serialList: function(){
 				let serialList = [];
 
-				let records = this.records;
+				let records = this.LocalList;
 				records.forEach(record => {
 					var itemToTest = {
 							postDate: record.postDate.split(' ')[0],
