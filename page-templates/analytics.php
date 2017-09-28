@@ -40,6 +40,7 @@ get_header();
 	<div>
 		<h3>Total Reflections Over Time</h3>
 		<svg width="640" height="400"></svg>
+		<div id="pieChartDiv" style="height: 400px;"></div>
 		<div id="barChartDiv" style="height: 400px;"></div>
 		<div id="chartDiv" style="height: 500px;">
 		</div>
@@ -543,12 +544,36 @@ get_header();
 				}
 
 				} );
+			},
+			makePieChart: function(){
+				var chart = AmCharts.makeChart( "pieChartDiv", {
+					"type": "pie",
+					"theme": "light",
+					"dataProvider": [ {
+						"answer": "yes",
+						"value": this.questionSummary.question3.yes
+						},
+						{
+						"answer": "no",
+						"value": this.questionSummary.question3.no
+						}
+					],
+					"valueField": "value",
+					"titleField": "answer",
+					"balloon":{
+					"fixedPosition":true
+					},
+					"export": {
+						"enabled": true
+					}
+					} );
 			}
 		},
 		updated: function(){
 			this.makeSerialChart();
 			this.makeNetworkDiagram();
 			this.makeBarChart();
+			this.makePieChart();
 		}
 	})
 
@@ -562,7 +587,7 @@ get_header();
 		},
 		methods: {
 			getData: function(){
-				this.$http.get('/wp-json/davinci/v1/data').then(response =>{
+				this.$http.get('/davinci-events/wp-json/davinci/v1/data').then(response =>{
 					this.records = response.body;
 				}, response => {
 					console.log(response);
