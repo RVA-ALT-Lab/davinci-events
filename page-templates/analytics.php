@@ -435,7 +435,7 @@ get_header();
 				}
 			},
 			clearNetworkDiagram: function(){
-				d3.select('svg > *').remove();
+				d3.select('svg > g').remove();
 			},
 			makeNetworkDiagram: function(){
 				var svg = d3.select("svg");
@@ -594,8 +594,8 @@ get_header();
 			}
 		},
 		updated: function(){
-			this.makeSerialChart();
 			this.clearNetworkDiagram();
+			this.makeSerialChart();
 			this.makeNetworkDiagram();
 			this.makeBarChart();
 			this.makePieChart();
