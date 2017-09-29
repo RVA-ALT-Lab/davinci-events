@@ -77,7 +77,7 @@ get_header();
 					</div>
 					<div class="col-lg-6">
 						<h3>Network</h3>
-						<svg width="280" height="200"></svg>
+						<svg id="network" width="280" height="200"></svg>
 					</div>
 					<div class="col-lg-12">
 						<div id="chartDiv" style="height: 300px;"></div>
@@ -435,7 +435,7 @@ get_header();
 				}
 			},
 			clearNetworkDiagram: function(){
-				d3.select('svg > g').remove();
+				d3.selectAll('svg#network > g').remove();
 			},
 			makeNetworkDiagram: function(){
 				var svg = d3.select("svg");
