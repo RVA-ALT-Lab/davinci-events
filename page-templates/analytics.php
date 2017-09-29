@@ -38,35 +38,58 @@ get_header();
 
 <script type="text/x-template" id="records-table">
 	<div>
-		<h3>Total Reflections Over Time</h3>
-		<svg width="640" height="400"></svg>
-		<div id="pieChartDiv" style="height: 400px;"></div>
-		<div id="barChartDiv" style="height: 400px;"></div>
-		<div id="chartDiv" style="height: 500px;">
-		</div>
-		<input type="text" name="filter" v-model="localFilter">
-		<label for="eventFilter">Event Filter</label>
-		<select name="eventFilter" v-model="eventFilter">
-			<option value="All">All</option>
-			<option v-for="event in eventsList">{{event}}</option>
-		</select>
-		<label for="cohortFilter">Cohort Filter</label>
-		<select name="cohortFilter" v-model="cohortFilter">
-			<option value="All">All</option>
-			<option value="2016 – 2018">2016 - 2018</option>
-			<option value="2017 – 2019">2017 - 2019</option>
-		</select>
+		<div class="row">
 
-		<label for="majorFilter">Major Filter</label>
-		<select name="majorFilter" v-model="majorFilter">
-			<option value="All">All</option>
-			<option value="Engineering">Engineering</option>
-			<option value="Business">Business</option>
-			<option value="Arts">Arts</option>
-			<option value="Humanities and Sciences">Humanities and Sciences</option>
-			<option value="Other">Other</option>
-		</select>
-		{{questionSummary.total}}
+			<div class="col-lg-8">
+				<div class="row">
+					<div class="col-lg-6">
+					<h3>Data Filters</h3>
+						<div class="form-group">
+							<label for="filter">Text Filter</label>
+							<input type="text" name="filter" class="form-control" v-model="localFilter">
+						</div>
+						<div class="form-group">
+							<label for="eventFilter">Event Filter</label>
+							<select name="eventFilter" class="form-control" v-model="eventFilter">
+								<option value="All">All</option>
+								<option v-for="event in eventsList">{{event}}</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="cohortFilter">Cohort Filter</label>
+							<select name="cohortFilter" class="form-control" v-model="cohortFilter">
+								<option value="All">All</option>
+								<option value="2016 – 2018">2016 - 2018</option>
+								<option value="2017 – 2019">2017 - 2019</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="majorFilter">Major Filter</label>
+							<select name="majorFilter" class="form-control" v-model="majorFilter">
+								<option value="All">All</option>
+								<option value="Engineering">Engineering</option>
+								<option value="Business">Business</option>
+								<option value="Arts">Arts</option>
+								<option value="Humanities and Sciences">Humanities and Sciences</option>
+								<option value="Other">Other</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<h3>Network</h3>
+						<svg width="280" height="200"></svg>
+					</div>
+					<div class="col-lg-12">
+						<div id="chartDiv" style="height: 300px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-4">
+				<h3>Survey Results</h3>
+				<div id="pieChartDiv" style="height: 200px;"></div>
+				<div id="barChartDiv" style="height: 300px;"></div>
+			</div>
+		</div>
 		<table class="table">
 			<thead>
 				<th>Reflection ID</th>
@@ -337,7 +360,6 @@ get_header();
 					"marginRight": 40,
 					"marginLeft": 40,
 					"autoMarginOffset": 20,
-					"mouseWheelZoomEnabled":true,
 					"dataDateFormat": "YYYY-MM-DD",
 					"valueAxes": [{
 						"id": "v1",
@@ -392,11 +414,6 @@ get_header();
 						"valueLineAlpha":0.2,
 						"valueZoomable":true
 					},
-					"valueScrollbar":{
-					"oppositeAxis":false,
-					"offset":50,
-					"scrollbarHeight":10
-					},
 					"categoryField": "postDate",
 					"categoryAxis": {
 						"parseDates": true,
@@ -416,6 +433,9 @@ get_header();
 				function zoomChart() {
 					chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
 				}
+			},
+			clearNetworkDiagram: function(){
+				d3.select('svg > *').remove();
 			},
 			makeNetworkDiagram: function(){
 				var svg = d3.select("svg");
@@ -495,6 +515,7 @@ get_header();
 				var chart = AmCharts.makeChart( "barChartDiv", {
 				"type": "serial",
 				"theme": "light",
+				"rotate": true,
 				"dataProvider": [
 					{
 						"question": "Question 1",
@@ -514,6 +535,8 @@ get_header();
 					}
 				 ],
 				"valueAxes": [ {
+					"position": "top",
+					"axisAlpha": 0,
 					"gridColor": "#FFFFFF",
 					"gridAlpha": 0.2,
 					"dashLength": 0
@@ -534,6 +557,7 @@ get_header();
 				},
 				"categoryField": "question",
 				"categoryAxis": {
+					"position": "left",
 					"gridPosition": "start",
 					"gridAlpha": 0,
 					"tickPosition": "start",
@@ -571,6 +595,7 @@ get_header();
 		},
 		updated: function(){
 			this.makeSerialChart();
+			this.clearNetworkDiagram();
 			this.makeNetworkDiagram();
 			this.makeBarChart();
 			this.makePieChart();
