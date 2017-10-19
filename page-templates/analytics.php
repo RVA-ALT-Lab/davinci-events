@@ -361,11 +361,15 @@ get_header();
 					"marginLeft": 40,
 					"autoMarginOffset": 20,
 					"dataDateFormat": "YYYY-MM-DD",
+					"titles": [{
+						"text": "Reflection Submissions Over Time",
+						"size": 15
+					}],
 					"valueAxes": [{
 						"id": "v1",
 						"axisAlpha": 0,
 						"position": "left",
-						"ignoreAxisWidth":true
+						"ignoreAxisWidth":true,
 					}],
 					"balloon": {
 						"borderThickness": 1,
@@ -516,22 +520,30 @@ get_header();
 				"type": "serial",
 				"theme": "light",
 				"rotate": true,
+				"titles": [{
+						"text": "Survey Responses",
+						"size": 15
+					}],
 				"dataProvider": [
 					{
 						"question": "Question 1",
-						"average": this.questionSummary.question1
+						"average": this.questionSummary.question1,
+						"label": "I'm confident I can use some things I've learned today."
 					},
 					{
 						"question": "Question 2",
-						"average": this.questionSummary.question2
+						"average": this.questionSummary.question2,
+						"label": "I was well engaged during the event."
 					},
 					{
 						"question": "Question 4",
-						"average": this.questionSummary.question4
+						"average": this.questionSummary.question4,
+						"label": "The event was beneficial to my studies."
 					},
 					{
 						"question": "Question 5",
-						"average": this.questionSummary.question5
+						"average": this.questionSummary.question5,
+						"label": "My current assessment of my overall Innovate experience thus far."
 					}
 				 ],
 				"valueAxes": [ {
@@ -539,12 +551,14 @@ get_header();
 					"axisAlpha": 0,
 					"gridColor": "#FFFFFF",
 					"gridAlpha": 0.2,
-					"dashLength": 0
+					"dashLength": 0,
+					"min": 0,
+					"minimum": 0
 				} ],
 				"gridAboveGraphs": true,
 				"startDuration": 1,
 				"graphs": [ {
-					"balloonText": "[[category]]: <b>[[value]]</b>",
+					"balloonText": "[[label]]</br>[[category]]: <b>[[value]]</b>",
 					"fillAlphas": 0.8,
 					"lineAlpha": 0.2,
 					"type": "column",
@@ -573,6 +587,10 @@ get_header();
 				var chart = AmCharts.makeChart( "pieChartDiv", {
 					"type": "pie",
 					"theme": "light",
+					"titles": [{
+						"text": "This experience taught me something new.",
+						"size": 10
+					}],
 					"dataProvider": [ {
 						"answer": "yes",
 						"value": this.questionSummary.question3.yes
