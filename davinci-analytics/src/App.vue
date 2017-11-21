@@ -107,7 +107,7 @@ body {
 
 .sidebar ul li {
   position: relative;
-  height: 88px;
+  height: 95px;
 }
 
 .sidebar ul li a {
@@ -117,6 +117,7 @@ body {
   color: #fff;
   font-size: 1.25rem;
   font-weight: bold;
+  text-align: center;
 }
 
 .sidebar ul li a.router-link-exact-active {
@@ -129,6 +130,7 @@ body {
   stroke: #fff;
   width: 50px;
   align-self: center;
+  margin-top: 10px;
 }
 
 .sidebar ul li a.router-link-exact-active svg {

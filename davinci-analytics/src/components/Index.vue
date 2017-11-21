@@ -270,6 +270,7 @@ export default {
 
   },
   updated: function () {
+    console.log(this.networkStructure)
     this.clearNetworkDiagram()
     this.makeNetworkDiagram()
 
