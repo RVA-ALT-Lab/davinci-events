@@ -226,7 +226,7 @@ LEFT JOIN
 ( SELECT meta_value as userMajor, post_id FROM wp_24727_postmeta WHERE meta_key = "major")
 As MetaTable3 ON  MetaTable.profileID = MetaTable3.post_id
 
--- This section of code getst the event ID and subsequent info that depends on that ID
+-- This section of code gets the event ID and subsequent info that depends on that ID
 INNER JOIN
     (SELECT REPLACE(slug, "event-", "") AS eventID, object_id
         FROM wp_24727_term_relationships
