@@ -1,25 +1,55 @@
 <template>
-  <div class='hello'>
+<div class='container-fluid'>
+  <div class='row mt-3'>
+    <div class='col-lg-12'>
     <h1>{{ msg }}</h1>
-    <p>Total Hours: {{totalHours}}</p>
-    <p>Total Reflections: {{records.length}}</p>
-    <p>Total Events: {{eventList.length}}</p>
-    <svg id="network" width="500" height="500"></svg>
+    <h2>{{subtitle}}</h2>
 
+        <div class='card-deck mt-3'>
+          <div class='card'>
+            <div class='card-body'>
+              <h4 class='card-title'>{{eventList.length}} Total Events</h4>
+              <div id='line1' style='vertical-align: middle;display: inline-block; width: 100%; height: 75px;'></div>
+            </div>
+          </div>
+          <div class='card'>
+            <div class='card-body'>
+              <h4 class='card-title'>{{totalHours}} Total Hours</h4>
+              <div id='line2' style='vertical-align: middle;display: inline-block; width: 100%; height: 75px;'></div>
+            </div>
+          </div>
+          <div class='card'>
+            <div class='card-body'>
+              <h4 class='card-title'>{{records.length}} Total Reflections</h4>
+              <div id='line3' style='vertical-align: middle;display: inline-block; width: 100%; height: 75px;'></div>
+            </div>
+          </div>
+        </div>
+    </div>
   </div>
+  <div class="row mt-3">
+    <div class="col-lg-6">
+      <h3>Innovation by the Numbers</h3>
+      <p>{{networkStructure.nodes.length}} students have made {{networkStructure.links.length}} connections across disciplines like business, engineering, art, sciences, and the humanities.</p>
+      <svg id='network' width='500' height='300'></svg>
+    </div>
+  </div>
+</div>
 </template>
 
 <script>
 import 'amcharts3/amcharts/amcharts'
 import 'amcharts3/amcharts/serial'
 import 'amcharts3/amcharts/themes/light'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import * as d3 from 'd3'
 
 export default {
   name: 'Index',
   data () {
     return {
-      msg: 'Innovate LLP Analytics'
+      msg: 'Innovate LLP Analytics',
+      subtitle: 'VCU Innovate LLP equips innovative entrepreneurs with a human-centered design foundation to launch new ventures or products.'
     }
   },
   computed: {
@@ -46,6 +76,98 @@ export default {
       }
       eventsList = eventsList.filter(onlyUnique)
       return eventsList
+    },
+    reflectionsByMonth: function () {
+      const results = []
+      let months = this.records.map(record => {
+        return record.postDate.split(' ')[0].split('-')[1]
+      })
+
+      months.forEach(month => {
+        let found = false
+        results.forEach(result => {
+          if (result.month === month) {
+            result.count++
+            found = true
+          }
+        })
+        if (!found) {
+          let newMonth = {
+            month: month,
+            count: 1
+          }
+          results.push(newMonth)
+        }
+      })
+      return results
+    },
+    eventsByMonth: function () {
+      let months = this.records.map(record => {
+        let date = record.postDate.split(' ')[0].split('-')[1]
+        let eventId = record.eventID
+        let newEvent = {month: date, eventID: eventId}
+        return newEvent
+      })
+
+      let results = []
+
+      months.forEach(month => {
+        let found = false
+        results.forEach(result => {
+          if (result.month === month.month) {
+            result.events.push(month.eventID)
+            found = true
+          }
+        })
+        if (!found) {
+          let newResult = {month: month.month, events: []}
+          newResult.events.push(month.eventID)
+          results.push(newResult)
+        }
+      })
+
+      let unique = function (xs) {
+        return xs.filter(function (x, i) {
+          return xs.indexOf(x) === i
+        })
+      }
+
+      results.forEach(result => {
+        result.events = unique(result.events)
+      })
+
+      results = results.map(result => {
+        return {month: result.month, count: result.events.length}
+      })
+
+      return results
+    },
+    hoursLoggedByMonth: function () {
+      const results = []
+      let months = this.records.map(record => {
+        let date = record.postDate.split(' ')[0].split('-')[1]
+        let hours = record.eventHours
+        let newEvent = {month: date, hours: hours}
+        return newEvent
+      })
+
+      months.forEach(month => {
+        let found = false
+        results.forEach(result => {
+          if (result.month === month.month) {
+            result.count = result.count + parseInt(month.hours)
+            found = true
+          }
+        })
+        if (!found) {
+          let newMonth = {
+            month: month.month,
+            count: parseInt(month.hours)
+          }
+          results.push(newMonth)
+        }
+      })
+      return results
     },
     networkStructure: function () {
       // This data structure will be built from this.records
@@ -150,7 +272,12 @@ export default {
   updated: function () {
     this.clearNetworkDiagram()
     this.makeNetworkDiagram()
+
+    this.makeSparklineChart('line1', this.eventsByMonth, 'month', 'count')
+    this.makeSparklineChart('line2', this.hoursLoggedByMonth, 'month', 'count')
+    this.makeSparklineChart('line3', this.reflectionsByMonth, 'month', 'count')
   },
+
   methods: {
     makeNetworkDiagram: function () {
       var svg = d3.select('#network')
@@ -227,11 +354,39 @@ export default {
     },
     clearNetworkDiagram: function () {
       d3.selectAll('svg#network > g').remove()
+    },
+    makeSparklineChart: function (id, dataProvider, categoryField, valueField) {
+      window.AmCharts.makeChart(id, {
+        'type': 'serial',
+        'dataProvider': dataProvider,
+        'categoryField': categoryField,
+        'autoMargins': false,
+        'marginLeft': 0,
+        'marginRight': 0,
+        'marginTop': 0,
+        'marginBottom': 0,
+        'graphs': [ {
+          'valueField': valueField,
+          'lineColor': '#a9ec49',
+          'showBalloon': false
+        } ],
+        'valueAxes': [ {
+          'gridAlpha': 0,
+          'axisAlpha': 0
+        } ],
+        'categoryAxis': {
+          'gridAlpha': 0,
+          'axisAlpha': 0
+        }
+      })
     }
   },
   mounted: function () {
     this.clearNetworkDiagram()
     this.makeNetworkDiagram()
+    this.makeSparklineChart('line1', this.eventsByMonth, 'month', 'count')
+    this.makeSparklineChart('line2', this.hoursLoggedByMonth, 'month', 'count')
+    this.makeSparklineChart('line3', this.reflectionsByMonth, 'month', 'count')
   }
 }
 </script>
