@@ -171,7 +171,7 @@ export default {
       return serialList
     }
   },
-  created: function () {
+  mounted: function () {
     this.makeSerialChart()
   },
   updated: function () {

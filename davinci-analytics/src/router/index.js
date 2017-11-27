@@ -34,7 +34,6 @@ export default new Router({
       path: '/students/:id',
       name: 'individualStudent',
       component: individualStudent
-
     }
   ]
 })
