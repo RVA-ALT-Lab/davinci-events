@@ -111,6 +111,7 @@ body {
 }
 
 .sidebar ul li a {
+  text-align: center;
   display: inline-block;
   height: 100%;
   width: 100%;

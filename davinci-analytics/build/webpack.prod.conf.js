@@ -112,6 +112,15 @@ const webpackConfig = merge(baseWebpackConfig, {
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
       }
+    ]),
+
+    // copy amcharts stuff into dist directory
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../node_modules/amcharts3/amcharts/images'),
+        to: config.build.assetsSubDirectory + '/amcharts/images',
+        ignore: ['.*']
+      }
     ])
   ]
 })
