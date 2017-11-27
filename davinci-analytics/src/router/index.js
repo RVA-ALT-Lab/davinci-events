@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Index from '@/components/Index'
 import Program from '@/components/Program'
 import Events from '@/components/Events'
+import individualEvent from '@/components/individualEvent'
 import Students from '@/components/Students'
 import individualStudent from '@/components/individualStudent'
 
@@ -24,6 +25,11 @@ export default new Router({
       path: '/events',
       name: 'Events',
       component: Events
+    },
+    {
+      path: '/events/:id',
+      name: 'individualEvent',
+      component: individualEvent
     },
     {
       path: '/students',

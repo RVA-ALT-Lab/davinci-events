@@ -34,7 +34,7 @@ import 'amcharts3/amcharts/xy'
 import 'amcharts3/amcharts/themes/light'
 
 export default {
-  name: 'Events',
+  name: 'individualEvent',
   data () {
     return {
       msg: 'Innovate LLP Events'
