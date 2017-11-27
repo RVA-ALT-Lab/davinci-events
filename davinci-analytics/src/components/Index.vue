@@ -8,19 +8,19 @@
         <div class='card-deck mt-3'>
           <div class='card'>
             <div class='card-body'>
-              <h4 class='card-title'>{{eventList.length}} Total Events</h4>
+              <h4 class='card-title'>{{eventList.length}} Total Events Attended</h4>
               <div id='line1' style='vertical-align: middle;display: inline-block; width: 100%; height: 75px;'></div>
             </div>
           </div>
           <div class='card'>
             <div class='card-body'>
-              <h4 class='card-title'>{{totalHours}} Total Hours</h4>
+              <h4 class='card-title'>{{totalHours}} Total Hours Logged</h4>
               <div id='line2' style='vertical-align: middle;display: inline-block; width: 100%; height: 75px;'></div>
             </div>
           </div>
           <div class='card'>
             <div class='card-body'>
-              <h4 class='card-title'>{{records.length}} Total Reflections</h4>
+              <h4 class='card-title'>{{records.length}} Total Reflections Submitted</h4>
               <div id='line3' style='vertical-align: middle;display: inline-block; width: 100%; height: 75px;'></div>
             </div>
           </div>

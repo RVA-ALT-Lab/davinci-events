@@ -1,13 +1,30 @@
 <template>
-  <div class='hello'>
-    <h1>{{ msg }}</h1>
-    {{eventsHash}}
-    <div class="grid-container">
-      <div class="half-width">
-        <div id="linechart" style="height: 300px;"></div>
+  <div class='container-fluid'>
+    <div class="row">
+       <div class="col-lg-12">
+       <h1>{{ msg }}</h1>
+      <table class="table table-striped table-responsive">
+        <thead class="thead-inverse">
+          <tr>
+            <th>Event Title</th>
+            <th>Event ID</th>
+            <th>Total Hours</th>
+            <th>Total Reflections</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="event in eventsHash" :key="event.eventID">
+            <th scope="row">
+              <router-link :to="{path:'/events/' + event.eventID}">{{event.eventTitle}}</router-link>
+            </th>
+            <td>{{event.eventID}}</td>
+            <td>{{event.eventHours}}</td>
+            <td>{{event.reflections}}</td>
+          </tr>
+        </tbody>
+      </table>
       </div>
     </div>
-    <div id="chartdiv"></div>
   </div>
 </template>
 
@@ -31,6 +48,7 @@ export default {
           eventHash[record.eventID]['reflections'] = eventHash[record.eventID]['reflections'] + 1
         } else {
           eventHash[record.eventID] = {
+            eventID: record.eventID,
             eventTitle: record.eventTitle,
             eventHours: record.eventHours,
             reflections: 1
