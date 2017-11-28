@@ -1,9 +1,17 @@
 <template>
-  <div class='container-fluid'>
+  <div class="container-fluid">
     <div class="row">
        <div class="col-lg-12">
        <h1>{{ msg }}</h1>
-      <table class="table table-striped table-responsive">
+       <div class="row">
+         <div class="col-lg-6">
+           <div id="barChartDiv"></div>
+         </div>
+         <div class="col-lg-6">
+           <div id="pieChartDiv"></div>
+         </div>
+       </div>
+      <table class="table mt-3 table-striped table-responsive">
         <thead class="thead-inverse">
           <tr>
             <th>Event Title</th>
@@ -14,7 +22,7 @@
         </thead>
         <tbody>
           <tr v-for="event in eventsHash" :key="event.eventID">
-            <th scope="row">
+            <th scope='row'>
               <router-link :to="{path:'/events/' + event.eventID}">{{event.eventTitle}}</router-link>
             </th>
             <td>{{event.eventID}}</td>
@@ -31,6 +39,7 @@
 <script>
 import 'amcharts3/amcharts/amcharts'
 import 'amcharts3/amcharts/xy'
+import 'amcharts3/amcharts/pie'
 import 'amcharts3/amcharts/themes/light'
 
 export default {
@@ -41,9 +50,12 @@ export default {
     }
   },
   computed: {
+    records: function () {
+      return this.$parent.records
+    },
     eventsHash: function () {
       let eventHash = {}
-      this.$parent.records.forEach(record => {
+      this.records.forEach(record => {
         if (eventHash[record.eventID]) {
           eventHash[record.eventID]['reflections'] = eventHash[record.eventID]['reflections'] + 1
         } else {
@@ -56,136 +68,142 @@ export default {
         }
       })
       return eventHash
+    },
+    questionSummary: function () {
+      let questionObject = {
+        total: 0,
+        question1: 0,
+        question2: 0,
+        question3: {
+          yes: 0,
+          no: 0
+        },
+        question4: 0,
+        question5: 0
+      }
+      this.records.forEach(item => {
+        questionObject.total++
+        questionObject.question1 = questionObject.question1 + parseInt(item.question1)
+        questionObject.question2 = questionObject.question2 + parseInt(item.question2)
+        if (item.question3.toLowerCase() === 'yes') {
+          questionObject.question3.yes++
+        } else {
+          questionObject.question3.no++
+        }
+        questionObject.question4 = questionObject.question4 + parseInt(item.question4)
+        questionObject.question5 = questionObject.question5 + parseInt(item.question5)
+      })
+      questionObject.question1 = (questionObject.question1 / questionObject.total).toFixed(1)
+      questionObject.question2 = (questionObject.question2 / questionObject.total).toFixed(1)
+      questionObject.question4 = (questionObject.question4 / questionObject.total).toFixed(1)
+      questionObject.question5 = (questionObject.question5 / questionObject.total).toFixed(1)
+
+      return questionObject
     }
   },
   created: function () {
   },
   updated: function () {
-
+    this.makeBarChart()
+    this.makePieChart()
   },
   mounted: function () {
+    this.makeBarChart()
+    this.makePieChart()
   },
   methods: {
-    createChart: function () {
-      let chart = window.AmCharts.makeChart('chartdiv', {
-        'type': 'xy',
+    makeBarChart: function () {
+      window.AmCharts.makeChart('barChartDiv', {
+        'type': 'serial',
         'theme': 'light',
-        'valueAxes': [{
-          'axisAlpha': 0,
-          'position': 'bottom'
-        }, {
-          'minMaxMultiplier': 1.2,
-          'axisAlpha': 0,
-          'position': 'left'
+        'rotate': false,
+        'titles': [{
+          'text': 'Survey Responses',
+          'size': 15
         }],
+        'dataProvider': [
+          {
+            'question': 'Question 1',
+            'average': this.questionSummary.question1,
+            'label': 'I\'m confident I can use some things I\'ve learned today.'
+          },
+          {
+            'question': 'Question 2',
+            'average': this.questionSummary.question2,
+            'label': 'I was well engaged during the event.'
+          },
+          {
+            'question': 'Question 4',
+            'average': this.questionSummary.question4,
+            'label': 'The event was beneficial to my studies.'
+          },
+          {
+            'question': 'Question 5',
+            'average': this.questionSummary.question5,
+            'label': 'My current assessment of my overall Innovate experience thus far.'
+          }
+        ],
+        'valueAxes': [ {
+          'position': 'top',
+          'axisAlpha': 0,
+          'gridColor': '#FFFFFF',
+          'gridAlpha': 0.2,
+          'dashLength': 0,
+          'min': 0,
+          'minimum': 0
+        }],
+        'gridAboveGraphs': true,
+        'startDuration': 1,
+        'graphs': [{
+          'balloonText': '[[label]]</br>[[category]]: <b>[[value]]</b>',
+          'fillAlphas': 0.8,
+          'lineAlpha': 0.2,
+          'type': 'column',
+          'valueField': 'average'
+        }],
+        'chartCursor': {
+          'categoryBalloonEnabled': false,
+          'cursorAlpha': 0,
+          'zoomable': false
+        },
+        'categoryField': 'question',
+        'categoryAxis': {
+          'position': 'left',
+          'gridPosition': 'start',
+          'gridAlpha': 0,
+          'tickPosition': 'start',
+          'tickLength': 20
+        },
+        'export': {
+          'enabled': true
+        }
+      })
+    },
+    makePieChart: function () {
+      window.AmCharts.makeChart('pieChartDiv', {
+        'type': 'pie',
+        'theme': 'light',
+        'titles': [{
+          'text': 'This experience taught me something new.',
+          'size': 10
+        }],
+        'dataProvider': [ {
+          'answer': 'yes',
+          'value': this.questionSummary.question3.yes
+        },
+        {
+          'answer': 'no',
+          'value': this.questionSummary.question3.no
+        }
+        ],
+        'valueField': 'value',
+        'titleField': 'answer',
         'balloon': {
           'fixedPosition': true
         },
-        'startDuration': 1.5,
-        'graphs': [{
-          'bullet': 'round',
-          'bulletBorderAlpha': 0.2,
-          'bulletAlpha': 0.8,
-          'lineAlpha': 0,
-          'fillAlphas': 0,
-          'valueField': 'Exclusive_Distance',
-          'balloonText': '<span style="font-size:18px;">State: [[State]]</br>In-State Students: [[x]]</br>Out-of-State Students: [[y]]</br>Total Distance Students: [[value]]</br></span>',
-          'xField': 'InState_Students',
-          'yField': 'OutOfState_Students',
-          'maxBulletSize': 100
-        }],
         'export': {
           'enabled': true
-        },
-        'dataProvider': this.filteredList
-      })
-      chart.addListener('clickGraphItem', this.selectState)
-    },
-    createLineChart: function () {
-      window.AmCharts.makeChart('linechart', {
-        'type': 'serial',
-        'theme': 'light',
-        'maginRight': 40,
-        'marginLeft': 40,
-        'autoMarginOffset': 20,
-        'dataDateFormat': 'YYYY',
-        'valueAxes': [{
-          'id': 'v1',
-          'axisAlpha': 0,
-          'position': 'left',
-          'ignoreAxisWidth': true
-        }],
-        'balloon': {
-          'borderThickness': 1,
-          'shadowAlpha': 0
-        },
-        'graphs': [{
-          'id': 'g1',
-          'balloon': {
-            'drop': true,
-            'adjustBorderColor': false,
-            'color': '#ffffff'
-          },
-          'bullet': 'round',
-          'bulletBorderAlpha': 1,
-          'bulletColor': '#FFFFFF',
-          'bulletSize': 5,
-          'useLineColorForBulletBorder': true,
-          'valueField': 'Exclusive_Distance'
-        },
-        {
-          'id': 'g2',
-          'balloon': {
-            'drop': true,
-            'adjustBorderColor': false,
-            'color': '#ffffff'
-          },
-          'bullet': 'round',
-          'bulletBorderAlpha': 1,
-          'bulletColor': '#FFFFFF',
-          'bulletSize': 5,
-          'useLineColorForBulletBorder': true,
-          'valueField': 'InState_Students'
-        },
-        {
-          'id': 'g3',
-          'balloon': {
-            'drop': true,
-            'adjustBorderColor': false,
-            'color': '#ffffff'
-          },
-          'bullet': 'round',
-          'bulletBorderAlpha': 1,
-          'bulletColor': '#FFFFFF',
-          'bulletSize': 5,
-          'useLineColorForBulletBorder': true,
-          'valueField': 'OutOfState_Students'
-        },
-        {
-          'id': 'g4',
-          'balloon': {
-            'drop': true,
-            'adjustBorderColor': false,
-            'color': '#ffffff'
-          },
-          'bullet': 'round',
-          'bulletBorderAlpha': 1,
-          'bulletColor': '#FFFFFF',
-          'bulletSize': 5,
-          'useLineColorForBulletBorder': true,
-          'valueField': 'Some_Distance'
         }
-        ],
-        'categoryField': 'Year',
-        'categoryAxis': {
-          'parseDates': true,
-          'dashLength': 1,
-          'minorGridEnabled': true
-        },
-        'export': {
-          'enabled': true
-        },
-        'dataProvider': this.annualFilteredStateData
       })
     }
   }
@@ -200,7 +218,8 @@ export default {
   grid-template-columns: 1fr 1fr 1fr;
 }
 
-#chartdiv {
+#barChartDiv,
+#pieChartDiv {
   height: 500px;
 }
 </style>

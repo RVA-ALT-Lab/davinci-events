@@ -20,7 +20,7 @@
       <div class="card">
         <div class="card-body">
           <h2 class="card-title">
-            {{reflection.eventTitle}}
+            {{reflection.eventTitle}} on on {{reflection.postDate.split(' ')[0]}}
           </h2>
           <div v-html="reflection.reflectionContent"></div>
         </div>
