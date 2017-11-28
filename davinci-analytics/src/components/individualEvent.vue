@@ -2,27 +2,15 @@
   <div class='container-fluid'>
     <div class="row">
        <div class="col-lg-12">
-       <h1>{{ msg }}</h1>
-      <table class="table table-striped table-responsive">
-        <thead class="thead-inverse">
-          <tr>
-            <th>Event Title</th>
-            <th>Event ID</th>
-            <th>Total Hours</th>
-            <th>Total Reflections</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="event in eventsHash" :key="event.eventID">
-            <th scope="row">
-              <router-link :to="{path:'/events/' + event.eventID}">{{event.eventTitle}}</router-link>
-            </th>
-            <td>{{event.eventID}}</td>
-            <td>{{event.eventHours}}</td>
-            <td>{{event.reflections}}</td>
-          </tr>
-        </tbody>
-      </table>
+       <h1>{{ $route.params.id }}</h1>
+       <div class="card mt-3" v-for="event in eventsList" :key="event.reflectionID">
+         <div class="card-body">
+          <h2>Submitted by {{event.userEmail}} on {{event.postDate}}</h2>
+          <div v-html="event.reflectionContent">
+
+          </div>
+         </div>
+       </div>
       </div>
     </div>
   </div>
@@ -41,21 +29,13 @@ export default {
     }
   },
   computed: {
-    eventsHash: function () {
-      let eventHash = {}
-      this.$parent.records.forEach(record => {
-        if (eventHash[record.eventID]) {
-          eventHash[record.eventID]['reflections'] = eventHash[record.eventID]['reflections'] + 1
-        } else {
-          eventHash[record.eventID] = {
-            eventID: record.eventID,
-            eventTitle: record.eventTitle,
-            eventHours: record.eventHours,
-            reflections: 1
-          }
-        }
+    records: function () {
+      return this.$parent.records
+    },
+    eventsList: function () {
+      return this.records.filter(record => {
+        return record.eventID === this.$route.params.id
       })
-      return eventHash
     }
   },
   created: function () {
