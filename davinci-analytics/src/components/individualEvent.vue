@@ -2,7 +2,7 @@
   <div class='container-fluid'>
     <div class="row">
        <div class="col-lg-12">
-       <h1>{{ $route.params.id }}</h1>
+       <h1>{{ eventName }}</h1>
         <div class="row">
          <div class="col-lg-6">
            <div id="individualBarChart"></div>
@@ -11,9 +11,11 @@
            <div id="individualPieChart"></div>
          </div>
        </div>
+       <hr>
+       <h2>Reflections</h2>
        <div class="card mt-3" v-for="event in eventsList" :key="event.reflectionID">
          <div class="card-body">
-          <h2>Submitted by {{event.userEmail}} on {{event.postDate.split(' ')[0]}}</h2>
+          <h2>Submitted by <router-link :to="{path:'/students/' + event.userEmail}">{{event.userEmail}}</router-link> on {{event.postDate.split(' ')[0]}}</h2>
           <div v-html="event.reflectionContent">
 
           </div>
@@ -39,6 +41,12 @@ export default {
   computed: {
     records: function () {
       return this.$parent.records
+    },
+    eventName: function () {
+      let eventArr = this.records.filter(record => {
+        return record.eventID === this.$route.params.id
+      })
+      return eventArr[0].eventTitle
     },
     eventsList: function () {
       return this.records.filter(record => {

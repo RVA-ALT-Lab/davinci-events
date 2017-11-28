@@ -20,7 +20,7 @@
       <div class="card">
         <div class="card-body">
           <h2 class="card-title">
-            {{reflection.eventTitle}} on on {{reflection.postDate.split(' ')[0]}}
+            <router-link :to="{path:'/events/' + reflection.eventID}">{{reflection.eventTitle}}</router-link> on {{reflection.postDate.split(' ')[0]}}
           </h2>
           <div v-html="reflection.reflectionContent"></div>
         </div>
