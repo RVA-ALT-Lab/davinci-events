@@ -27,11 +27,34 @@
         </div>
     </div>
   </div>
-  <div class="row mt-3">
+  <div class="row mt-5">
     <div class="col-lg-6">
       <h3>Innovation by the Numbers</h3>
-      <p>{{networkStructure.nodes.length}} students have made {{networkStructure.links.length}} connections across disciplines like business, engineering, art, sciences, and the humanities.</p>
+      <p>{{networkStructure.nodes.length}} students have made {{networkStructure.links.length}} connections across disciplines like business, engineering, art, sciences, and the humanities.
+        Click on a node to see more details about that student.
+      </p>
       <svg id='network' width='500' height='300'></svg>
+    </div>
+    <div class="col-lg-6">
+      <div class="card" v-if="selectedStudentData">
+        <div class="card-body">
+          <p><img src="http://dsi-vd.github.io/patternlab-vd/images/fpo_avatar.png" class="img-fluid avatar-img"></p>
+          <p>Name: <router-link :to="{path:'/students/' + selectedStudentData.name}">{{selectedStudentData.name}}</router-link></p>
+          <p>Major: {{selectedStudentData.major}}</p>
+          <p>Cohort: {{selectedStudentData.cohort}}</p>
+          <p>Event Attended: {{selectedStudentData.reflectionCount}}</p>
+          <p>Total Hours: {{selectedStudentData.totalHours}}</p>
+          <div class="progress">
+              <div class="progress-bar" role="progressbar" :style="{width: ((selectedStudentData.totalHours / 65) * 100) + '%'}" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{Math.round(((selectedStudentData.totalHours / 65) * 100))}}%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div class="col-lg-12">
+      <h3>Student Satisfaction with the Innovate Experience</h3>
+        <div id="innovateSatisfaction"></div>
     </div>
   </div>
 </div>
@@ -49,10 +72,30 @@ export default {
   data () {
     return {
       msg: 'Innovate LLP Analytics',
-      subtitle: 'VCU Innovate LLP equips innovative entrepreneurs with a human-centered design foundation to launch new ventures or products.'
+      subtitle: 'VCU Innovate LLP equips innovative entrepreneurs with a human-centered design foundation to launch new ventures or products.',
+      selectedStudent: ''
     }
   },
   computed: {
+    selectedStudentData: function () {
+      let selectedStudentArr = this.records.filter(record => {
+        return record.userEmail === this.selectedStudent
+      })
+
+      let selectedStudentData = ''
+      if (selectedStudentArr.length >= 1) {
+        selectedStudentData = {}
+        selectedStudentData.name = selectedStudentArr[0].userEmail
+        selectedStudentData.cohort = selectedStudentArr[0].userCohort
+        selectedStudentData.major = selectedStudentArr[0].userMajor
+        selectedStudentData.reflectionCount = selectedStudentArr.length
+        selectedStudentData.totalHours = selectedStudentArr.reduce(function (total, value) {
+          return parseInt(total) + parseInt(value.eventHours)
+        }, 0)
+      }
+
+      return selectedStudentData
+    },
     records: function () {
       return this.$parent.records
     },
@@ -264,6 +307,43 @@ export default {
         }
       }
       return structure
+    },
+    innnovateSatisfaction: function () {
+      const results = []
+      let months = this.records.map(record => {
+        return record.postDate.split(' ')[0].split('-')[1]
+      })
+
+      function onlyUnique (value, index, self) {
+        return self.indexOf(value) === index
+      }
+
+      let uniqueMonths = months.filter(onlyUnique)
+
+      uniqueMonths.forEach(month => {
+        let monthData = {
+          month: month,
+          scores: []
+        }
+        this.records.forEach(record => {
+          if (record.postDate.split(' ')[0].split('-')[1] === monthData.month) {
+            monthData.scores.push(record.question5)
+          }
+        })
+        results.push(monthData)
+      })
+
+      let averagedResults = results.map(result => {
+        let average = ((result.scores.reduce((count, value) => parseInt(count) + parseInt(value), 0)) / result.scores.length).toFixed(2)
+
+        let averagedResult = {
+          month: result.month,
+          average: average
+        }
+        return averagedResult
+      })
+
+      return averagedResults
     }
   },
   filters: {
@@ -273,6 +353,7 @@ export default {
     console.log(this.networkStructure)
     this.clearNetworkDiagram()
     this.makeNetworkDiagram()
+    this.makeSerialChart()
 
     this.makeSparklineChart('line1', this.eventsByMonth, 'month', 'count')
     this.makeSparklineChart('line2', this.hoursLoggedByMonth, 'month', 'count')
@@ -306,7 +387,7 @@ export default {
         .enter().append('circle')
         .attr('r', 5)
         .attr('fill', function (d) { return color(d.group) })
-        .on('click', clicked)
+        .on('click', updateStudentData)
         .call(d3.drag()
           .on('start', dragstarted)
           .on('drag', dragged)
@@ -333,7 +414,9 @@ export default {
           .attr('cx', function (d) { return d.x })
           .attr('cy', function (d) { return d.y })
       }
-      function clicked (d) {
+      const vm = this
+      function updateStudentData (d) {
+        vm.selectedStudent = d.id
         console.log(d)
       }
       function dragstarted (d) {
@@ -380,11 +463,98 @@ export default {
           'axisAlpha': 0
         }
       })
+    },
+    makeSerialChart: function () {
+      let chart = window.AmCharts.makeChart('innovateSatisfaction', {
+        'path': 'dist/static/amcharts/',
+        'type': 'serial',
+        'theme': 'light',
+        'marginRight': 40,
+        'marginLeft': 40,
+        'autoMarginOffset': 20,
+        'dataDateFormat': 'MM',
+        // 'titles': [{
+        //   'text': 'Reflection Submissions Over Time',
+        //   'size': 15
+        // }],
+        'valueAxes': [{
+          'id': 'v1',
+          'axisAlpha': 0,
+          'position': 'left',
+          'ignoreAxisWidth': true
+        }],
+        'balloon': {
+          'borderThickness': 1,
+          'shadowAlpha': 0
+        },
+        'graphs': [{
+          'id': 'g1',
+          'balloon': {
+            'drop': true,
+            'adjustBorderColor': false,
+            'color': '#ffffff'
+          },
+          'bullet': 'round',
+          'bulletBorderAlpha': 1,
+          'bulletColor': '#FFFFFF',
+          'bulletSize': 5,
+          'hideBulletsCount': 50,
+          'lineThickness': 2,
+          'title': 'red line',
+          'useLineColorForBulletBorder': true,
+          'valueField': 'average',
+          'balloonText': '<span style="font-size:18px;">[[value]]</span>'
+        }],
+        'chartScrollbar': {
+          'graph': 'g1',
+          'oppositeAxis': false,
+          'offset': 30,
+          'scrollbarHeight': 80,
+          'backgroundAlpha': 0,
+          'selectedBackgroundAlpha': 0.1,
+          'selectedBackgroundColor': '#888888',
+          'graphFillAlpha': 0,
+          'graphLineAlpha': 0.5,
+          'selectedGraphFillAlpha': 0,
+          'selectedGraphLineAlpha': 1,
+          'autoGridCount': true,
+          'color': '#AAAAAA'
+        },
+        'chartCursor': {
+          'pan': true,
+          'valueLineEnabled': true,
+          'valueLineBalloonEnabled': true,
+          'cursorAlpha': 1,
+          'cursorColor': '#258cbb',
+          'limitToGraph': 'g1',
+          'valueLineAlpha': 0.2,
+          'valueZoomable': true
+        },
+        'categoryField': 'month',
+        'categoryAxis': {
+          'parseDates': true,
+          'dashLength': 1,
+          'minorGridEnabled': true
+        },
+        'export': {
+          'enabled': true
+        },
+        'dataProvider': this.innnovateSatisfaction
+      })
+
+      chart.addListener('rendered', zoomChart)
+
+      zoomChart()
+
+      function zoomChart () {
+        chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1)
+      }
     }
   },
   mounted: function () {
     this.clearNetworkDiagram()
     this.makeNetworkDiagram()
+    this.makeSerialChart()
     this.makeSparklineChart('line1', this.eventsByMonth, 'month', 'count')
     this.makeSparklineChart('line2', this.hoursLoggedByMonth, 'month', 'count')
     this.makeSparklineChart('line3', this.reflectionsByMonth, 'month', 'count')
@@ -394,10 +564,17 @@ export default {
 
 <!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style>
+#innovateSatisfaction {
+  height: 500px;
+}
 
 .links line {
   stroke: #999;
   stroke-opacity: 0.6;
+}
+
+.card-body .avatar-img {
+  max-height: 50px;
 }
 
 .nodes circle {
