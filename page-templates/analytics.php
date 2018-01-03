@@ -15,8 +15,7 @@ if (current_user_can('list_users')){
     echo $clean;
 } else {
     echo '<div class="alert alert-info" role="alert">
-    <p><strong>Oh snap!</strong> 😉 It looks like you don\'t have a profile yet, you should fill one out now.</p>
-    <a class="btn btn-primary" href="davinci-events/add-profile">Add Profile</a>
+    <p><strong>Oh snap!</strong> 😉 It looks like you don\'t have permission to view this page.</p>
   </div>';
 }
 
