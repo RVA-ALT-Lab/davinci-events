@@ -343,6 +343,7 @@ export default {
         return averagedResult
       })
 
+      console.log(averagedResults)
       return averagedResults
     }
   },
