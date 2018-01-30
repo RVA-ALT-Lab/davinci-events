@@ -466,7 +466,7 @@ export default {
       })
     },
     makeSerialChart: function () {
-      let chart = window.AmCharts.makeChart('innovateSatisfaction', {
+      window.AmCharts.makeChart('innovateSatisfaction', {
         'path': 'dist/static/amcharts/',
         'type': 'serial',
         'theme': 'light',
@@ -474,10 +474,6 @@ export default {
         'marginLeft': 40,
         'autoMarginOffset': 20,
         'dataDateFormat': 'MM',
-        // 'titles': [{
-        //   'text': 'Reflection Submissions Over Time',
-        //   'size': 15
-        // }],
         'valueAxes': [{
           'id': 'v1',
           'axisAlpha': 0,
@@ -542,14 +538,6 @@ export default {
         },
         'dataProvider': this.innnovateSatisfaction
       })
-
-      chart.addListener('rendered', zoomChart)
-
-      zoomChart()
-
-      function zoomChart () {
-        chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1)
-      }
     }
   },
   mounted: function () {
