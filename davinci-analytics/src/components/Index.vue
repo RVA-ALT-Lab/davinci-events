@@ -343,8 +343,10 @@ export default {
         return averagedResult
       })
 
-      console.log(averagedResults)
-      return averagedResults
+      let sortedResults = averagedResults.sort((a, b) => {
+        return parseInt(a.month) - parseInt(b.month)
+      })
+      return sortedResults
     }
   },
   filters: {
@@ -466,7 +468,7 @@ export default {
       })
     },
     makeSerialChart: function () {
-      window.AmCharts.makeChart('innovateSatisfaction', {
+      let chart = window.AmCharts.makeChart('innovateSatisfaction', {
         'path': 'dist/static/amcharts/',
         'type': 'serial',
         'theme': 'light',
@@ -474,6 +476,10 @@ export default {
         'marginLeft': 40,
         'autoMarginOffset': 20,
         'dataDateFormat': 'MM',
+        // 'titles': [{
+        //   'text': 'Reflection Submissions Over Time',
+        //   'size': 15
+        // }],
         'valueAxes': [{
           'id': 'v1',
           'axisAlpha': 0,
@@ -538,6 +544,14 @@ export default {
         },
         'dataProvider': this.innnovateSatisfaction
       })
+
+      chart.addListener('rendered', zoomChart)
+
+      zoomChart()
+
+      function zoomChart () {
+        chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1)
+      }
     }
   },
   mounted: function () {
