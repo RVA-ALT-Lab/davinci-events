@@ -180,7 +180,7 @@ export default {
   methods: {
     makeSerialChart: function () {
       let chart = window.AmCharts.makeChart('chartDiv', {
-        'path': 'dist/static/amcharts/',
+        'path': 'https://rampages.us/davinci-events/wp-content/themes/davinci-events/davinci-analytics/dist/static/amcharts/',
         'type': 'serial',
         'theme': 'light',
         'marginRight': 40,
