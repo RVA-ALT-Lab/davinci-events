@@ -469,7 +469,7 @@ export default {
     },
     makeSerialChart: function () {
       let chart = window.AmCharts.makeChart('innovateSatisfaction', {
-        'path': 'dist/static/amcharts/',
+        'path': 'davinci-events/davinci-analytics/dist/static/amcharts/',
         'type': 'serial',
         'theme': 'light',
         'marginRight': 40,
