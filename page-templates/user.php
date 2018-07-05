@@ -40,7 +40,7 @@ $container = get_theme_mod( 'understrap_container_type' );
         <img src="">      
         <div class="student-name"><?php echo userName();?></div>
         <div class="display-total">
-            <div id="totalHours"><?php echo theHours();?></div>
+            <div id="totalHours"><?php echo theHours(get_the_ID());?></div>
             <span class="label">hours total</span>
         </div>
       </div>
