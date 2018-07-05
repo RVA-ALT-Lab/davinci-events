@@ -253,11 +253,12 @@ ON EventIDTable.eventID = EventHoursTable.post_id'
 
 function suppress_email( $title, $id = null ) {
     $type = get_post_type( get_the_ID() );
-
+    $find = array('@mymail.vcu.edu', '@vcu.edu');
     if ( $type === 'profile') {
-        $title = str_replace('@vcu.edu','',$title);
+        $title = str_replace($find,'',$title);
     }
 
     return $title;
 }
 add_filter( 'the_title', 'suppress_email', 10, 2 );
+
