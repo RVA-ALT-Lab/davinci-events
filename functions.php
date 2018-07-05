@@ -248,3 +248,16 @@ ON EventIDTable.eventID = EventHoursTable.post_id'
 
 
 
+
+//remove emails from titles because of HB1
+
+function suppress_email( $title, $id = null ) {
+    $type = get_post_type( get_the_ID() );
+
+    if ( $type === 'profile') {
+        $title = str_replace('@vcu.edu','',$title);
+    }
+
+    return $title;
+}
+add_filter( 'the_title', 'suppress_email', 10, 2 );
